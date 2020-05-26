@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>Fuzzy Search</title>
+	<script type="text/javascript" src="https://rawgit.com/farzher/fuzzysort/master/fuzzysort.js"></script>
+	<script type="text/javascript" src="snomed.js"></script>
+	<script type="text/javascript">
+		function search(txt, targets) {
+			const options = {
+				limit: 150,
+			  //allowTypo: false, 
+				allowTypo: document.getElementById('typo').checked,
+				threshold: -10000
+			}
+			let results = fuzzysort.go(txt, targets, options)
+			let resultsh = results
+				.map(r => [r, r.target.slice(-1) == "!"])
+				.map(([ rz, old ]) => [ fuzzysort.highlight(rz), old ])
+				.map(([ rzh, old ]) => `<p ${old ? "class=old" : ""}>${rzh.replace("!","")}</p>`)
+			return resultsh.join('\n')
+		}
+		function dcl(e) {
+			let f = document.getElementById('found')
+			let s = document.getElementById('search')
+			let t = document.getElementById('typo')
+			let o = document.getElementById('old')
+			let targets = snotekst.map(i => fuzzysort.prepare(i))
+			s.addEventListener("input", e => f.innerHTML = search(s.value, targets))
+			t.addEventListener("change", e => {if (s.value != "") { f.innerHTML = search(s.value, targets) }})
+			o.addEventListener("change", e => {if (s.value != "") { f.innerHTML = search(s.value, targets) }})
+
+		}
+		document.addEventListener("DOMContentLoaded", dcl)
+	</script>
+	<style type="text/css">
+		input[type=checkbox]:checked~#found>.old {
+			display:none;
+		}
+		#found {
+			margin-top: 20px;
+			font-family: Courier New, monospace;
+		}
+		#found > p {
+			 margin-bottom: 0;
+			 margin-top: 3px;
+			font-size: 10pt;
+		}
+		.old {
+			color: #a8a8a8;
+		}
+	</style>
+</head>
+<body>
+	<label for="search">Find PatoSNOMED kode</label>
+	<input type="text" id="search">
+	<div style="display: inline-block; width: 30px;"></div>
+	<label for="typo">Også med forvekslede bogstaver</label>
+	<input type="checkbox" id="typo">
+	<label for="old">Skjul udgåede diagnoser</label>
+	<input type="checkbox" id="old">
+	<div id="found"></div>
+</body>
+</html>
