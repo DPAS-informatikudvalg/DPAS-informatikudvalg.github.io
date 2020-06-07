@@ -5,32 +5,43 @@
 	<script type="text/javascript" src="https://rawgit.com/farzher/fuzzysort/master/fuzzysort.js"></script>
 	<script type="text/javascript" src="snomed.js"></script>
 	<script type="text/javascript">
-		function search(txt, targets) {
-			const options = {
-				limit: 150,
-			  //allowTypo: false, 
-				allowTypo: document.getElementById('typo').checked,
-				threshold: -10000
-			}
-			let results = fuzzysort.go(txt, targets, options)
-			let resultsh = results
-				.map(r => [r, r.target.slice(-1) == "!"])
-				.map(([ rz, old ]) => [ fuzzysort.highlight(rz), old ])
-				.map(([ rzh, old ]) => `<p ${old ? "class=old" : ""}>${rzh.replace("!","")}</p>`)
-			return resultsh.join('\n')
-		}
-		function dcl(e) {
+		document.addEventListener("DOMContentLoaded", ignore =>{
 			let f = document.getElementById('found')
 			let s = document.getElementById('search')
 			let t = document.getElementById('typo')
 			let o = document.getElementById('old')
+			let fuzzy = document.getElementById('fuzzy')
 			let targets = snotekst.map(i => fuzzysort.prepare(i))
-			s.addEventListener("input", e => f.innerHTML = search(s.value, targets))
-			t.addEventListener("change", e => {if (s.value != "") { f.innerHTML = search(s.value, targets) }})
-			o.addEventListener("change", e => {if (s.value != "") { f.innerHTML = search(s.value, targets) }})
-
-		}
-		document.addEventListener("DOMContentLoaded", dcl)
+			s.addEventListener("input", e => { if (s.value !== "") search(s.value) });
+			[t, o, fuzzy].map(el => el.addEventListener("change", e => { if (s.value !== "") search(s.value) }))
+			let search = (search_string) => {
+				let limit = 150
+				if (fuzzy.checked) {
+					let options = {
+						limit: limit,
+						allowTypo: t.checked,
+						threshold: -10000,
+					}
+					f.innerHTML = fuzzysort.go(search_string, targets, options)
+						.map(r => [r, r.target.slice(-1) == "!"])
+						.map(([ rz, old ]) => [ fuzzysort.highlight(rz), old ])
+						.map(([ rzh, old ]) => `<p ${old ? "class=old" : ""}>${rzh.replace("!","")}</p>`)
+						.join('\n')
+				} else {
+					let found = 0
+					//f.innerHTML = snotekst.filter(s => (s.startsWith(search_string) || s.startsWith(search_string, 7)) && found++ < limit)
+					f.innerHTML = snotekst.filter(s => (s.startsWith(search_string) || RegExp(search_string).test(s.slice(7))) && found++ < limit)
+						.map(s => { 
+							let start0 = s.startsWith(search_string)
+							//s = start0 ? `<b>${search_string}</b>${s.slice(search_string.length)}` : `${s.slice(0, 7)}<b>${search_string}</b>${s.slice(7 + search_string.length)}`
+							s = start0 ? `<b>${search_string}</b>${s.slice(search_string.length)}` : `${s.replace(search_string,'<b>$&</b>')}`
+							s = s.slice(-1) === '!' ? `<p class ='old'>${s.slice(0,-1)}</p>` : `<p>${s}</p>`
+							return s
+						})
+						.join('\n')
+				}
+			}
+		})
 	</script>
 	<style type="text/css">
 		input[type=checkbox]:checked~#found>.old {
@@ -54,6 +65,8 @@
 	<label for="search">Find PatoSNOMED kode</label>
 	<input type="text" id="search">
 	<div style="display: inline-block; width: 30px;"></div>
+	<label for="fuzzy">Fuzzy søgning</label>
+	<input type="checkbox" id="fuzzy">
 	<label for="typo">Også med forvekslede bogstaver</label>
 	<input type="checkbox" id="typo">
 	<label for="old">Skjul udgåede diagnoser</label>
