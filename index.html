@@ -29,9 +29,9 @@
 				} else {
 					let found = 0
 					//f.innerHTML = snotekst.filter(s => (s.startsWith(search_string) || s.startsWith(search_string, 7)) && found++ < limit)
-					f.innerHTML = snotekst.filter(s => (s.startsWith(search_string) || RegExp(search_string).test(s.slice(7))) && found++ < limit)
+					f.innerHTML = snotekst.filter(s => (s.regionMatches(true, 0, search_string, 0, search_string.length()) || RegExp(search_string).test(s.slice(7))) && found++ < limit)
 						.map(s => { 
-							let start0 = s.startsWith(search_string)
+							let start0 = s.regionMatches(true, 0, search_string, 0, search_string.length())
 							//s = start0 ? `<b>${search_string}</b>${s.slice(search_string.length)}` : `${s.slice(0, 7)}<b>${search_string}</b>${s.slice(7 + search_string.length)}`
 							s = start0 ? `<b>${search_string}</b>${s.slice(search_string.length)}` : `${s.replace(search_string,'<b>$&</b>')}`
 							s = s.slice(-1) === '!' ? `<p class ='old'>${s.slice(0,-1)}</p>` : `<p>${s}</p>`
