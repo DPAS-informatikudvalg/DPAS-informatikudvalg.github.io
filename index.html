@@ -30,7 +30,7 @@
 				} else {
 					let found = 0
 					let r = RegExp(`(${search_string})`, "i")
-					let r0 = RegExp(`^(\\p{Lu}?${search_string})`, "ui")
+					let r0 = RegExp(`^([A-Æ]?${search_string})`, "i")
 					//f.innerHTML = snotekst.filter(s => (s.startsWith(search_string) || s.startsWith(search_string, 7)) && found++ < limit)
 					f.innerHTML = snotekst.filter(s => (r0.test(s) || r.test(s.slice(7))) && found++ < limit)
 						.map(s => { 
