@@ -11,6 +11,7 @@
 			let t = document.getElementById('typo')
 			let o = document.getElementById('old')
 			let fuzzy = document.getElementById('fuzzy')
+			let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 			let targets = snotekst.map(i => fuzzysort.prepare(i))
 			s.addEventListener("input", e => { if (s.value !== "") search(s.value) });
 			[t, o, fuzzy].map(el => el.addEventListener("change", e => { if (s.value !== "") search(s.value) }))
@@ -25,24 +26,43 @@
 					f.innerHTML = fuzzysort.go(search_string, targets, options)
 						.map(r => [r, r.target.slice(-1) == "!"])
 						.map(([ rz, old ]) => [ fuzzysort.highlight(rz), old ])
-						.map(([ rzh, old ]) => `<p ${old ? "class=old" : ""}>${rzh.replace("!","")}</p>`)
+						.map(([ rzh, old ]) => `${old ? "<span class=old>" : ""}${rzh.replace("!","")}${old ? "</span>" : ""}`)
 						.join('\n')
 				} else {
 					let found = 0
 					let r = RegExp(`(${search_string})`, "i")
+					let rs = RegExp(`^(${search_string})`, "i")
 					let r0 = RegExp(`^([A-Æ]?${search_string})`, "i")
 					//f.innerHTML = snotekst.filter(s => (s.startsWith(search_string) || s.startsWith(search_string, 7)) && found++ < limit)
-					f.innerHTML = snotekst.filter(s => (r0.test(s) || r.test(s.slice(7))) && found++ < limit)
+					let result = snotekst.filter(s => (r0.test(s) && found++ < limit))
 						.map(s => { 
-							if (r0.test(s)) { 
-								s = s.replace(r0, "<b>$1</b>") 
-							} else {
-								s = s.slice(0,7).concat(s.slice(7).replace(r, "<b>$1</b>"))
-							}
-							s = s.slice(-1) === '!' ? `<p class ='old'>${s.slice(0,-1)}</p>` : `<p>${s}</p>`
+							s = s.replace(r0, "<b>$1</b>") 
+							s = s.slice(-1) === '!' ? `<span class ='old'>${s.slice(0,-1)}</span>` : `${s}`
 							return s
 						})
-						.join('\n')
+					if (found < limit) {
+						result.push(...snotekst.filter(s => (rs.test(s.slice(7))) && found ++ < limit)
+							.sort((a,b)=> a.slice(0,7).localeCompare(b.slice(0,7)))
+							.map(s => {
+								s = s.slice(0,7).concat(s.slice(7).replace(rs, "<b>$1</b>"))
+								s = s.slice(-1) === '!' ? `<span class ='old'>${s.slice(0,-1)}</span>` : `${s}`
+								return s
+							})
+						)
+					}
+					if (found < limit) {
+						result.push(...sortedtekst.filter(s => (r.test(s.slice(8))) && found ++ < limit)
+							.map(s => [s, r.exec(s).index])
+							.sort((a, b) => a[1]>b[1])
+							.map(a => a[0] )
+							.map(s => {
+								s = s.slice(0,8).concat(s.slice(8).replace(r, "<b>$1</b>"))
+								s = s.slice(-1) === '!' ? `<span class ='old'>${s.slice(0,-1)}</span>` : `${s}`
+								return s
+							})
+						)
+					}
+					f.innerHTML = result.join('\n')
 				}
 			}
 		})
@@ -54,11 +74,8 @@
 		#found {
 			margin-top: 20px;
 			font-family: Courier New, monospace;
-		}
-		#found > p {
-			 margin-bottom: 0;
-			 margin-top: 3px;
 			font-size: 10pt;
+			line-height: 1.3em;
 		}
 		.old {
 			color: #a8a8a8;
@@ -74,6 +91,6 @@
 	<label for="typo">Også med forvekslede bogstaver</label>
 	<input type="checkbox" id="old">
 	<label for="old">Skjul udgåede diagnoser</label></p>
-	<div id="found"></div>
+	<pre id="found"></pre>
 </body>
 </html>
