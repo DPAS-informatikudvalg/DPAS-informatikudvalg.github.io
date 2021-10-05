@@ -36,7 +36,7 @@
 					//f.innerHTML = snotekst.filter(s => (s.startsWith(search_string) || s.startsWith(search_string, 7)) && found++ < limit)
 					let result = snotekst.filter(s => (r0.test(s) && found++ < limit))
 						.map(s => { 
-							s = s.replace(r0, "<b>$1</b>") 
+							s = s.slice(-7, -6) === '#' ? `<span style="color:${s.slice(-7)} !important;">${s.slice(0,-7)}</span>` : s
 							s = s.slice(-1) === '!' ? `<span class ='old'>${s.slice(0,-1)}</span>` : `${s}`
 							return s
 						})
@@ -45,6 +45,7 @@
 							.sort((a,b)=> a.slice(0,7).localeCompare(b.slice(0,7)))
 							.map(s => {
 								s = s.slice(0,7).concat(s.slice(7).replace(rs, "<b>$1</b>"))
+								s = s.slice(-7, -6) === '#' ? `<span style="color:${s.slice(-7)} !important;">${s.slice(0,-7)}</span>` : s
 								s = s.slice(-1) === '!' ? `<span class ='old'>${s.slice(0,-1)}</span>` : `${s}`
 								return s
 							})
@@ -57,6 +58,7 @@
 							.map(a => a[0] )
 							.map(s => {
 								s = s.slice(0,8).concat(s.slice(8).replace(r, "<b>$1</b>"))
+								s = s.slice(-7, -6) === '#' ? `<span style="color:${s.slice(-7)} !important;">${s.slice(0,-7)}</span>` : s
 								s = s.slice(-1) === '!' ? `<span class ='old'>${s.slice(0,-1)}</span>` : `${s}`
 								return s
 							})
