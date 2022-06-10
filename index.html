@@ -12,13 +12,14 @@
 			let t = document.getElementById('typo')
 			let o = document.getElementById('old')
 			let ca = document.getElementById('case')
+			let lim = document.getElementById('limit')
 			let fuzzy = document.getElementById('fuzzy')
 			let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 			let targets = snotekst.map(i => fuzzysort.prepare(i))
 			s.addEventListener("input", e => { if (s.value !== "") search(s.value) });
-			[t, o, fuzzy, ca].map(el => el.addEventListener("change", e => { if (s.value !== "") search(s.value) }))
+			[t, o, fuzzy, ca, lim].map(el => el.addEventListener("change", e => { if (s.value !== "") search(s.value) }))
 			let search = (search_string) => {
-				let limit = 250
+				let limit = lim.value
 				if (fuzzy.checked) {
 					let options = {
 						limit: limit,
@@ -44,7 +45,6 @@
 						return
 					}
 					s.style.color = "inherit"
-
 					//f.innerHTML = snotekst.filter(s => (s.startsWith(search_string) || s.startsWith(search_string, 7)) && found++ < limit)
 					let result = snotekst.filter(s => (r0.test(s) && found++ < limit))
 						.filter(s => !(o.checked && s.slice(-1) === '!'))
@@ -54,7 +54,7 @@
 							return s
 						})
 					if (found < limit) {
-						result.push(...snotekst.filter(s => (rs.test(s.slice(7))) && found ++ < limit)
+						result.push(...snotekst.filter(s => (rs.test(s.slice(7))) && found++ < limit)
 							.sort((a,b)=> a.slice(0,7).localeCompare(b.slice(0,7)))
 							.filter(s => !(o.checked && s.slice(-1) === '!'))
 							.map(s => {
@@ -66,7 +66,7 @@
 						)
 					}
 					if (found < limit) {
-						result.push(...sortedtekst.filter(s => (r.test(s.slice(8))) && found ++ < limit)
+						result.push(...sortedtekst.filter(s => (r.test(s.slice(8))) && found++ < limit)
 							.map(s => [s, r.exec(s).index])
 							.sort((a, b) => a[1]>b[1])
 							.map(a => a[0] )
@@ -80,6 +80,8 @@
 						)
 					}
 					f.innerHTML = result.join('\n')
+					if(found >= limit) f.innerHTML = `<b>${found} results, truncated to ${limit}</b>\n\n` + f.innerHTML
+					console.log(`${found} results`)
 				}
 			}
 		})
@@ -87,6 +89,9 @@
 	<style type="text/css">
 		#search {
 			width: 500px;
+		}
+		#limit {
+			width: 50px;
 		}
 		input[type=checkbox]:checked~#found>.old {
 			display:none;
@@ -105,7 +110,11 @@
 <body>
 	<p><label for="search">Find PatoSNOMED kode</label>
 	<input type="text" id="search"></p>
-	<p><input type="checkbox" id="fuzzy">
+	<p>
+	<label for="limit">Max</label>
+	<input type="number" id="limit" value="150"> resultater&nbsp;&nbsp;
+
+	<input type="checkbox" id="fuzzy">
 	<label for="fuzzy">Fuzzy søgning</label>
 	<input type="checkbox" id="typo">
 	<label for="typo">Også med forvekslede bogstaver</label>
