@@ -45,6 +45,7 @@
 					return
 				}
 				if (idx.checked) {
+					search_string = search_string.padEnd(6,'0')
 					let index = snotekst.findLastIndex(e=> e.slice(0,search_string.length).localeCompare(search_string, "da-DK") < 0)
 					let beginning = index > 10 ? index - 10 : 0
 					let end = index + 10 > snotekst.length ? snotekst.length : index + 10
