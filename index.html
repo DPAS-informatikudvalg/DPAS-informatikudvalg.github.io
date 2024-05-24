@@ -14,18 +14,19 @@
 			let ca = document.getElementById('case')
 			let lim = document.getElementById('limit')
 			let fuzzy = document.getElementById('fuzzy')
-			let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
-			let targets = snotekst.map(i => fuzzysort.prepare(i))
+			let idx = document.getElementById('index')
+			let sortedtekst = undefined
+			let targets = undefined 
 
 			s.addEventListener("input", e => { if (s.value !== "") search(s.value) });
 
-			[t, o, fuzzy, ca, lim].map(el => el.addEventListener("change", e => { if (s.value !== "") search(s.value) }))
+			[t, o, fuzzy, ca, lim].map(el => el.addEventListener("change", e => { if (s.value !== "") search(s.value, lim.value) }))
 
-			let search = (search_string) => {
-				let limit = lim.value
+			let search = (search_string, limit) => {
 				if (fuzzy.checked) {
 					// this branch searches only through fuzzysort
 					let options = { limit: limit, allowTypo: t.checked, threshold: -10000 }
+					targets = targets || snotekst.map(i => fuzzysort.prepare(i))
 					f.innerHTML = fuzzysort.go(search_string, targets, options)
 						.map(r => [r, r.target.slice(-1) == "!"])
 						.map(([ rz, old ]) => [ fuzzysort.highlight(rz), old ])
@@ -68,6 +69,7 @@
 					)
 				}
 				if (found < limit) {
+					sortedtekst = sortedtekst || [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 					result.push(...sortedtekst.filter(s => (r.test(s.slice(8))) && found++ < limit)
 						.map(s => [s, r.exec(s).index])
 						.sort((a, b) => a[1]>b[1])
