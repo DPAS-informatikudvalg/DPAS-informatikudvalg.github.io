@@ -50,7 +50,7 @@
 					let end = index + 10 > snotekst.length ? snotekst.length : index + 10
 					f.innerHTML = snotekst.slice(beginning, end)
 						.map(s => format(s))
-						.toSpliced(index - beginning + 1, 0, search_string + '\t <----')
+						.toSpliced(index - beginning + 2, 0, `<span class='index>${search_string}\t<----</span>`)
 						.join('\n')
 					return
 				}
@@ -118,6 +118,10 @@
 		}
 		.old {
 			color: #a8a8a8;
+		}
+		.index {
+			color: green;
+			font-weight: bold;
 		}
 	</style>
 </head>
