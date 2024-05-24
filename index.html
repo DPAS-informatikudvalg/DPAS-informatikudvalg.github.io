@@ -41,7 +41,7 @@
 				} 
 				if (idx.checked) {
 					let len = search_string.length
-					let index = snotekst.findIndex(e => e.slice(len - 1) > search_string)
+					let index = snotekst.findIndex(e => e.slice(0, len) > search_string)
 					f.innerHTML = snotekst[index]
 					return
 				}
