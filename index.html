@@ -16,7 +16,8 @@
 			let lim = document.getElementById('limit')
 			let fuzzy = document.getElementById('fuzzy')
 			let idx = document.getElementById('index')
-			let sortedtekst = undefined
+			//let sortedtekst = undefined
+			let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 			let targets = undefined 
 
 			s.addEventListener("input", e => { if (s.value !== "") search(s.value) });
@@ -30,7 +31,7 @@
 					targets = targets || snotekst.map(i => fuzzysort.prepare(i))
 					f.innerHTML = fuzzysort.go(search_string, targets, options)
 						.map(r => [r, r.target.slice(-1) == "!"])
-						.map(([ rz, old ]) => [ fuzzysort.highlight(rz), old ])
+						.map(([ rz, old ]) => [ rz.highlight(), old ])
 						.map(([ rzh, old ]) => `${old ? "<span class=old>" : ""}${rzh.replace("!","")}${old ? "</span>" : ""}`)
 						.join('\n')
 					// end fuzzysort, code below searches through RegExp and Array.filter
@@ -70,7 +71,7 @@
 					)
 				}
 				if (found < limit) {
-					sortedtekst = sortedtekst || [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
+					//sortedtekst = sortedtekst || [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 					result.push(...sortedtekst.filter(s => (r.test(s.slice(8))) && found++ < limit)
 						.map(s => [s, r.exec(s).index])
 						.sort((a, b) => a[1]>b[1])
