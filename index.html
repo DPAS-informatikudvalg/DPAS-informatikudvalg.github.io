@@ -20,11 +20,13 @@
 			let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 			let targets = undefined 
 
-			s.addEventListener("input", e => { if (s.value !== "") search(s.value) });
+			s.addEventListener("input", e => { if (s.value !== "") search() });
 
-			[t, o, fuzzy, ca, lim].map(el => el.addEventListener("change", e => { if (s.value !== "") search(s.value, lim.value) }))
+			[t, o, fuzzy, ca, lim].map(el => el.addEventListener("change", e => { if (s.value !== "") search() }))
 
-			let search = (search_string, limit) => {
+			let search = () => {
+				let search_string = s.value
+				let limit = lim.value
 				if (fuzzy.checked) {
 					// this branch searches only through fuzzysort
 					let options = { limit: limit, allowTypo: t.checked, threshold: -10000 }
