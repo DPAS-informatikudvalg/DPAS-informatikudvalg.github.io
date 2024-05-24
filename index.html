@@ -16,8 +16,8 @@
 			let lim = document.getElementById('limit')
 			let fuzzy = document.getElementById('fuzzy')
 			let idx = document.getElementById('index')
-			//let sortedtekst = undefined
-			let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
+			let sortedtekst = undefined
+			//let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 			let targets = undefined 
 
 			s.addEventListener("input", e => { if (s.value !== "") search() });
@@ -73,7 +73,9 @@
 					)
 				}
 				if (found < limit) {
-					//sortedtekst = sortedtekst || [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
+					sortedtekst = sortedtekst || [...snotekst].sort((a, b)=> { 
+						a.slice(7).localeCompare(b.slice(7))
+					})
 					result.push(...sortedtekst.filter(s => (r.test(s.slice(8))) && found++ < limit)
 						.map(s => [s, r.exec(s).index])
 						.sort((a, b) => a[1]>b[1])
