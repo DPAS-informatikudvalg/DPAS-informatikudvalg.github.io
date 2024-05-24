@@ -20,9 +20,9 @@
 			//let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 			let targets = undefined 
 
-			s.addEventListener("input", e => { if (s.value !== "") search() });
+			s.addEventListener("input", e => { if (s.value !== "") search() else f.innerHTML = "" });
 
-			[t, o, fuzzy, ca, lim].map(el => el.addEventListener("change", e => { if (s.value !== "") search() }))
+			[t, o, fuzzy, ca, lim].map(el => el.addEventListener("change", e => { if (s.value !== "") search()  else f.innerHTML = ""}))
 			let format = (s) => { 
 				s = s.slice(-7, -6) === '#' ? `<span style="color:${s.slice(-7)} !important;">${s.slice(0,-7)}</span>` : s
 				s = s.slice(-1) === '!' ? `<span class ='old'>${s.slice(0,-1)}</span>` : `${s}`
