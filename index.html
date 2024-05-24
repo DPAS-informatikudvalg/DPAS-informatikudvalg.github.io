@@ -40,7 +40,7 @@
 					return
 				} 
 				if (idx.checked) {
-					let index = snotekst.findLastIndex(e=> e.localeCompare(search_string)<=0)
+					let index = snotekst.slice(0,search_string.length).findLastIndex(e=> e.localeCompare(search_string)<=0)
 					f.innerHTML = snotekst[index == -1 ? 0 : index]
 					return
 				}
