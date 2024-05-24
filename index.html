@@ -44,7 +44,11 @@
 					let index = 0
 					for (let i = search_string.length; i >=0; i--) {
 						index = snotekst.findIndex(e => e.slice(0, i) == search_string.slice(0, i))
-						if (index > 0) break
+						if (index >= 0) { 
+							break
+						} else {
+
+						}
 					}
 					f.innerHTML = snotekst[index]
 					return
