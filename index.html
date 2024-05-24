@@ -16,8 +16,11 @@
 			let fuzzy = document.getElementById('fuzzy')
 			let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 			let targets = snotekst.map(i => fuzzysort.prepare(i))
+
 			s.addEventListener("input", e => { if (s.value !== "") search(s.value) });
+
 			[t, o, fuzzy, ca, lim].map(el => el.addEventListener("change", e => { if (s.value !== "") search(s.value) }))
+
 			let search = (search_string) => {
 				let limit = lim.value
 				if (fuzzy.checked) {
@@ -118,9 +121,9 @@
 	<label for="fuzzy">Fuzzy søgning</label>
 	<input type="checkbox" id="typo">
 	<label for="typo">Også med forvekslede bogstaver</label>
-	<input type="checkbox" id="old" checked="false">
+	<input type="checkbox" id="old">
 	<label for="old">Skjul udgåede diagnoser</label>
-	<input type="checkbox" id="case" checked="false">
+	<input type="checkbox" id="case">
 	<label for="case">Case sensitive</label></p>
 	<pre id="found"></pre>
 </body>
