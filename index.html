@@ -39,6 +39,11 @@
 					// end fuzzysort, code below searches through RegExp and Array.filter
 					return
 				} 
+				if (idx.checked) {
+					let index = snotekst.findIndex(e => e.slice(7) > search_string)
+					f.innerHTML = snotekst[index]
+					return
+				}
 				let found = 0
 				let caseSensitive = ca.checked ? "": "i"
 				let r, rs, r0
