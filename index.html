@@ -40,17 +40,8 @@
 					return
 				} 
 				if (idx.checked) {
-					let len = search_string.length
-					let index = 0
-					for (let i = search_string.length; i >=0; i--) {
-						index = snotekst.findIndex(e => e.slice(0, i) == search_string.slice(0, i))
-						if (index >= 0) { 
-							break
-						} else {
-
-						}
-					}
-					f.innerHTML = snotekst[index]
+					let index = snotekst.findLastIndex(e=> e.localeCompare(search_string)<0)
+					f.innerHTML = snotekst[index == -1 ? 0 : index]
 					return
 				}
 				let found = 0
