@@ -18,11 +18,12 @@
 			let idx = document.getElementById('index')
 			let sortedtekst = undefined
 			//let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
-			let targets = undefined 
+			let targets = undefined
 
-			s.addEventListener("input", e => { if (s.value !== "") {search()} else {f.innerHTML = ""} });
+			s.addEventListener("input", e => { f.innerHTML = ""; if (s.value !== "") search() });
 
-			[t, o, fuzzy, ca, lim].map(el => el.addEventListener("change", e => { if (s.value !== "") {search()}  else {f.innerHTML = ""}}))
+			[t, o, fuzzy, ca, lim, idx].map(el => el.addEventListener("change", e => { f.innerHTML = ""; if (s.value !== "") search()} ))
+
 			let format = (s) => {
 				s = s.slice(-7, -6) === '#' ? `<span style="color:${s.slice(-7)} !important;">${s.slice(0,-7)}</span>` : s
 				s = s.slice(-1) === '!' ? `<span class ='old'>${s.slice(0,-1)}</span>` : `${s}`
@@ -40,19 +41,20 @@
 						.map(r => [r, r.target.slice(-1) == "!"])
 						.map(([ rz, old ]) => [ rz.highlight(), old ])
 						.map(([ rzh, old ]) => `${old ? "<span class=old>" : ""}${rzh.replace("!","")}${old ? "</span>" : ""}`)
+						.map(s => s.slice(-1) === '!' ? `<span class ='old'>${s.slice(0,-1)}</span>` : `${s}`)
 						.join('\n')
 					// end fuzzysort, code below searches through RegExp and Array.filter
 					return
 				}
 				if (idx.checked) {
-					search_string = search_string.padEnd(6,'0')
-					let index = snotekst.findLastIndex(e=> e.slice(0,search_string.length).localeCompare(search_string, "da-DK") < 0)
+					padded_string = search_string.padEnd(6,'0')
+					let index = snotekst.findIndex(e=> e.slice(0,padded_string.length).localeCompare(padded_string, "da-DK") > 0)
 					let beginning = index > 10 ? index - 10 : 0
 					let end = index + 10 > snotekst.length ? snotekst.length : index + 10
-					f.innerHTML = snotekst.slice(beginning, end)
-						.map(s => format(s))
-						.toSpliced(index - beginning + 1, 0, `<span class=index>${search_string}\t<----</span>`)
-						.join('\n')
+					let exact_match = snotekst[index-1].slice(0,6) == search_string
+					let result = snotekst.slice(beginning, end).map(s => format(s))
+					result[index - beginning-1] = exact_match ? `<span class=index>${result[index-beginning-1]} <----</span>` : `${result[index-beginning-1]}\n<span class=index>${search_string}\t<----</span>`
+					f.innerHTML = result.join('\n')
 					return
 				}
 				let found = 0
@@ -84,15 +86,17 @@
 					)
 				}
 				if (found < limit) {
-					sortedtekst = sortedtekst || [...snotekst].sort((a, b)=> { 
-						a.slice(7).localeCompare(b.slice(7))
-					})
+					sortedtekst = sortedtekst || [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 					result.push(...sortedtekst.filter(s => (r.test(s.slice(8))) && found++ < limit)
 						.map(s => [s, r.exec(s).index])
 						.sort((a, b) => a[1]>b[1])
 						.map(a => a[0] )
 						.filter(s => !(o.checked && s.slice(-1) === '!'))
-						.map(s => format(s))
+						.map(s => {
+							s = s.slice(0,7).concat(s.slice(7).replace(r, "<b>$1</b>"))
+							s = format(s)
+							return s
+						})
 					)
 				}
 				f.innerHTML = result.join('\n')
