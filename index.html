@@ -19,6 +19,7 @@
 			let sortedtekst = undefined
 			//let sortedtekst = [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 			let targets = undefined
+			let oldfiltered = snotekst.filter(s => s.slice(-1) !== '!')
 
 			s.addEventListener("input", e => { f.innerHTML = ""; if (s.value !== "") search() });
 
@@ -33,6 +34,7 @@
 			let search = () => {
 				let search_string = s.value
 				let limit = lim.value
+				let snotekst = o.checked ? oldfiltered : snotekst
 				if (fuzzy.checked) {
 					// this branch searches only through fuzzysort
 					let options = { limit: limit, allowTypo: t.checked, threshold: -10000 }
