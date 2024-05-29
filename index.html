@@ -34,11 +34,11 @@
 			let search = () => {
 				let search_string = s.value
 				let limit = lim.value
-				let snotekst = o.checked ? oldfiltered : snotekst
+				let thetekst = o.checked ? oldfiltered : snotekst
 				if (fuzzy.checked) {
 					// this branch searches only through fuzzysort
 					let options = { limit: limit, allowTypo: t.checked, threshold: -10000 }
-					targets = targets || snotekst.map(i => fuzzysort.prepare(i))
+					targets = targets || thetekst.map(i => fuzzysort.prepare(i))
 					f.innerHTML = fuzzysort.go(search_string, targets, options)
 						.map(r => [r, r.target.slice(-1) == "!"])
 						.map(([ rz, old ]) => [ rz.highlight(), old ])
@@ -50,11 +50,11 @@
 				}
 				if (idx.checked) {
 					padded_string = search_string.padEnd(6,'0')
-					let index = snotekst.findIndex(e=> e.slice(0,padded_string.length).localeCompare(padded_string, "da-DK") > 0)
+					let index = thetekst.findIndex(e=> e.slice(0,padded_string.length).localeCompare(padded_string, "da-DK") > 0)
 					let beginning = index > 10 ? index - 10 : 0
-					let end = index + 10 > snotekst.length ? snotekst.length : index + 10
-					let exact_match = snotekst[index-1].slice(0,6) == search_string
-					let result = snotekst.slice(beginning, end).map(s => format(s))
+					let end = index + 10 > thetekst.length ? thetekst.length : index + 10
+					let exact_match = thetekst[index-1].slice(0,6) == search_string
+					let result = thetekst.slice(beginning, end).map(s => format(s))
 					result[index - beginning-1] = exact_match ? `<span class=index>${result[index-beginning-1]} <----</span>` : `${result[index-beginning-1]}\n<span class=index>${search_string}\t<----</span>`
 					f.innerHTML = result.join('\n')
 					return
@@ -72,12 +72,12 @@
 					return
 				}
 				s.style.color = "inherit"
-				//f.innerHTML = snotekst.filter(s => (s.startsWith(search_string) || s.startsWith(search_string, 7)) && found++ < limit)
-				let result = snotekst.filter(s => (r0.test(s) && found++ < limit))
-					.filter(s => !(o.checked && s.slice(-1) === '!'))
+				//f.innerHTML = thetekst.filter(s => (s.startsWith(search_string) || s.startsWith(search_string, 7)) && found++ < limit)
+				let result = thetekst.filter(s => (r0.test(s) && found++ < limit))
+					//.filter(s => !(o.checked && s.slice(-1) === '!'))
 					.map(s => format(s))
 				if (found < limit) {
-					result.push(...snotekst.filter(s => (rs.test(s.slice(7))) && found++ < limit)
+					result.push(...thetekst.filter(s => (rs.test(s.slice(7))) && found++ < limit)
 						.sort((a,b)=> a.slice(0,7).localeCompare(b.slice(0,7)))
 						.filter(s => !(o.checked && s.slice(-1) === '!'))
 						.map(s => {
@@ -88,12 +88,12 @@
 					)
 				}
 				if (found < limit) {
-					sortedtekst = sortedtekst || [...snotekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
+					sortedtekst = sortedtekst || [...thetekst].sort((a, b)=> a.slice(7).localeCompare(b.slice(7)))
 					result.push(...sortedtekst.filter(s => (r.test(s.slice(8))) && found++ < limit)
 						.map(s => [s, r.exec(s).index])
 						.sort((a, b) => a[1]>b[1])
 						.map(a => a[0] )
-						.filter(s => !(o.checked && s.slice(-1) === '!'))
+						//.filter(s => !(o.checked && s.slice(-1) === '!'))
 						.map(s => {
 							s = s.slice(0,7).concat(s.slice(7).replace(r, "<b>$1</b>"))
 							s = format(s)
